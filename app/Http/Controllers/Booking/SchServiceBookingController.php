@@ -26,6 +26,8 @@ use Carbon\Carbon;
 use ErrorException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Log;
+
 
 class SchServiceBookingController extends Controller
 {
@@ -113,11 +115,14 @@ class SchServiceBookingController extends Controller
      */
     public function saveBooking(Request $request)
     {
+        Log::info('Datos del formulario:', $request->all());
         DB::beginTransaction();
         try {
             $request = (object)$request->bookingData;
             $bookingRepo = new BookingRepository();
             $customerInfo = CmnCustomer::where('id',  $request->cmn_customer_id)->select('phone_no', 'user_id')->first();
+            
+            
 
             //insert service booking
             $serviceList = array();
@@ -157,6 +162,7 @@ class SchServiceBookingController extends Controller
                     'id' => null,
                     'cmn_branch_id' => $item->cmn_branch_id,
                     'cmn_customer_id' => $request->cmn_customer_id,
+                    'cmn_pet_id'=>$request->petdropdown,
                     'sch_employee_id' => $item->sch_employee_id,
                     'date' => $item->service_date,
                     'start_time' => $serviceStartTime,
@@ -177,15 +183,15 @@ class SchServiceBookingController extends Controller
             $payableAmount = $serviceTotalAmount;
             $couponDiscount = 0;
             //get voucher discount
-            if (UtilityRepository::emptyOrNullToZero($request->coupon_code) != 0) {
-                $couponRepo = new CouponRepository();
-                $couponDiscount = $couponRepo->validateAndGetCouponValue($customerInfo->user_id, $request->coupon_code, $serviceTotalAmount);
-            }
-            if ($couponDiscount > 0) {
-                $payableAmount = $payableAmount - $couponDiscount;
-            } else {
-                $couponDiscount = 0;
-            }
+            // if (UtilityRepository::emptyOrNullToZero($request->coupon_code) != 0) {
+            //     $couponRepo = new CouponRepository();
+            //     $couponDiscount = $couponRepo->validateAndGetCouponValue($customerInfo->user_id, $request->coupon_code, $serviceTotalAmount);
+            // }
+            // if ($couponDiscount > 0) {
+            //     $payableAmount = $payableAmount - $couponDiscount;
+            // } else {
+            //     $couponDiscount = 0;
+            // }
 
             //update service paid status
             $totalServiceAmount = $serviceTotalAmount;
@@ -212,7 +218,7 @@ class SchServiceBookingController extends Controller
                 'paid_amount' => $request->paid_amount,
                 'due_amount' => $dueAmount,
                 'is_due_paid' => $dueAmount > 0 ? 0 : 1,
-                'coupon_code' => $request->coupon_code,
+                'coupon_code' => "",
                 'coupon_discount' => $couponDiscount,
                 'remarks' => $request->remarks,
                 'created_by' => auth()->id()

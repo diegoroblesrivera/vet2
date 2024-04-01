@@ -99,24 +99,22 @@
 
         $("#sch_service_category_id").on("change", function () {
             BookingManager.LoadServiceDropDown($(this).val());
-            $('#sch_service_category_id').val('2');
         });
 
         $("#sch_service_id").on("change", function () {
             BookingManager.LoadEmployeeDropDown($(this).val());
-           
         });
 
         $(".serviceInput").on("change", function () {
             let selectedPropId = $(this).attr('id');
             if (selectedPropId == "cmn_branch_id") {
                 $("#sch_employee_id").val('');
-                $("#sch_service_category_id").val('2');
-                $("#sch_service_id").val('2');
+                $("#sch_service_category_id").val('');
+                $("#sch_service_id").val('');
             }
             else if (selectedPropId == "sch_service_category_id") {
                 $("#sch_employee_id").val('');
-                $("#sch_service_id").val('2');
+                $("#sch_service_id").val('');
             } else if (selectedPropId == "sch_service_id") {
                 $("#sch_employee_id").val('');
                 BookingManager.LoadServiceTimeSlot($(this).val(), $("#sch_employee_id").val());
@@ -132,7 +130,7 @@
         });
 
         $(".iChangeDate").on("click", function () {
-            BookingManager.LoadServiceTimeSlot($("#sch_service_id").val(2), $("#sch_employee_id").val());
+            BookingManager.LoadServiceTimeSlot($("#sch_service_id").val(), $("#sch_employee_id").val());
         });
 
 
@@ -161,13 +159,14 @@
             $("#cmn_branch_id").val(scheduleTempData.cmn_branch_id);
             $("#sch_service_category_id").val(scheduleTempData.sch_service_category_id);
             $("#cmn_customer_id").val(scheduleTempData.cmn_customer_id).selectpicker('refresh');
+            $("#petdropdown").val(scheduleTempData.petdropdown).selectpicker('refresh');
             $("#cmn_payment_type_id").val(scheduleTempData.cmn_payment_type_id);
             $("#paid_amount").val(scheduleTempData.paid_amount);
             $("#status").val(scheduleTempData.status);
             $("#remarks").val(scheduleTempData.remarks);
-            BookingManager.LoadServiceDropDown($("#sch_service_category_id").val(2), scheduleTempData.sch_service_id);
-            BookingManager.LoadEmployeeDropDown($("#sch_service_id").val(2), scheduleTempData.sch_employee_id);
-            BookingManager.LoadServiceTimeSlot($("#sch_service_id").val(2), $("#sch_employee_id").val());
+            BookingManager.LoadServiceDropDown($("#sch_service_category_id").val(), scheduleTempData.sch_service_id);
+            BookingManager.LoadEmployeeDropDown($("#sch_service_id").val(), scheduleTempData.sch_employee_id);
+            BookingManager.LoadServiceTimeSlot($("#sch_service_id").val(), $("#sch_employee_id").val());
             $.each($("#divServiceAvaiableTime > .divTimeSlot"), function (i, v) {
                 if ($(v).attr('title') == scheduleTempData.start_time + "-" + scheduleTempData.end_time) {
                     $(v).addClass("divTimeSlotActive");
@@ -306,12 +305,10 @@
         }
         else if (!employeeId.val()) {
             Message.Warning('Staff is required');
-        } 
-        // else if (serviceTime.length < 1 || typeof $("input[name='service_time']:checked").val() == 'undefined') {
-        //     Message.Warning("Select service time.");
-        //     $(".divTimeSlot").addClass('border-red');
-        // } 
-        else {
+        } else if (serviceTime.length < 1 || typeof $("input[name='service_time']:checked").val() == 'undefined') {
+            Message.Warning("Select service time.");
+            $(".divTimeSlot").addClass('border-red');
+        } else {
             BookingManager.AddBookingSchedule();
             return true;
         }
@@ -335,6 +332,7 @@
             $("#sch_service_id").selectpicker('refresh');
             $("#sch_employee_id").selectpicker('refresh');
             $("#cmn_customer_id").selectpicker('refresh');
+            $("#petdropdown").selectpicker('refresh');
             bookingList = [];
             $("#iSelectedServiceList").empty();
             $("#div-service-summary").addClass('d-none');
@@ -349,7 +347,7 @@
                 onChangeDateTime: function (dp, $input) {
                     $("#serviceDate").val($input.val());
                     BookingManager.SetServiceProperty($input.val());
-                    BookingManager.LoadServiceTimeSlot($("#sch_service_id").val(2), $("#sch_employee_id").val())
+                    BookingManager.LoadServiceTimeSlot($("#sch_service_id").val(), $("#sch_employee_id").val())
                 }
             });
             BookingManager.SetServiceProperty(startDate);
@@ -395,8 +393,7 @@
             JsManager.SendJson('GET', serviceUrl, jsonParam, onSuccess, onFailed);
 
             function onSuccess(jsonData) {
-                JsManager.PopulateCombo("#sch_service_category_id", jsonData.data, "Seleccione una", '');
-                $("#sch_service_category_id").val('2').change();
+                JsManager.PopulateCombo("#sch_service_category_id", jsonData.data, "Select One", '');
             }
             function onFailed(xhr, status, err) {
                 Message.Exception(xhr);
@@ -413,7 +410,6 @@
                 });
                 $("#sch_service_id").html(cbmOptions);
                 $("#sch_service_id").selectpicker('refresh');
-                $("#sch_service_id").val('2').change();
             }
             function onFailed(xhr, status, err) {
                 Message.Exception(xhr);
@@ -442,8 +438,8 @@
             JsManager.SendJson('GET', serviceUrl, jsonParam, onSuccess, onFailed);
 
             function onSuccess(jsonData) {
-                JsManager.PopulateComboSelectPicker("#cmn_customer_id", jsonData.data, "Seleccione uno", '', nowInsertedCustomerId);
-                JsManager.PopulateComboSelectPicker("#filter_cmn_customer_id", jsonData.data, "Cualquier cliente", '0');
+                JsManager.PopulateComboSelectPicker("#cmn_customer_id", jsonData.data, "Select One", '', nowInsertedCustomerId);
+                JsManager.PopulateComboSelectPicker("#filter_cmn_customer_id", jsonData.data, "All Customer", '0');
                 $("#cmn_customer_id").selectpicker('refresh');
                 $("#filter_cmn_customer_id").selectpicker('refresh');
             }
@@ -457,9 +453,7 @@
             JsManager.SendJson('GET', serviceUrl, jsonParam, onSuccess, onFailed);
 
             function onSuccess(jsonData) {
-                JsManager.PopulateCombo("#cmn_payment_type_id", jsonData.data, "Seleccione Uno", '');
-                $("#cmn_payment_type_id").val('1').change();
-
+                JsManager.PopulateCombo("#cmn_payment_type_id", jsonData.data, "Select One", '');
             }
             function onFailed(xhr, status, err) {
                 Message.Exception(xhr);
@@ -524,6 +518,7 @@
                     BookingManager.AddBookingSchedule()
                 let bookingData = {
                     cmn_customer_id: $("#cmn_customer_id").val(),
+                    petdropdown: $("#petdropdown").val(),
                     cmn_payment_type_id: $("#cmn_payment_type_id").val(),
                     paid_amount: $("#paid_amount").val(),
                     status: $("#status").val(),
@@ -670,7 +665,7 @@
         DoneBooking: function (id) {
             if (Message.Prompt()) {
                 JsManager.StartProcessBar();
-                let emailNotify = $("#view_schedule_email_notify").prop('checked'); 
+                let emailNotify = $("#view_schedule_email_notify").prop('checked');
                 emailNotify = emailNotify ? 1 : null;
                 var jsonParam = { id: id, email_notify: emailNotify };
                 var serviceUrl = "done-service-booking";
@@ -737,7 +732,7 @@
                         return true;
                     }
                     return item.branchId == $("#cmn_branch_id").val() &&
-                        item.categoryId == $("#sch_service_category_id").val(2) &&
+                        item.categoryId == $("#sch_service_category_id").val() &&
                         item.serviceId == $("#sch_service_id").val() &&
                         item.employeeId == $("#sch_employee_id").val() &&
                         item.serviceTime == $("input[name='service_time']:checked").val() &&
@@ -752,7 +747,7 @@
             var currentEmp = currentEmpList.filter(function (emp) { return emp.id == $("#sch_employee_id").val() })[0];
             bookingList.push({
                 branchId: $("#cmn_branch_id").val(),
-                categoryId: $("#sch_service_category_id").val(2),
+                categoryId: $("#sch_service_category_id").val(),
                 serviceId: $("#sch_service_id").val(),
                 service_name: $("#sch_service_id option:selected").text(),
                 employeeId: $("#sch_employee_id").val(),
@@ -783,7 +778,7 @@
                     '<td>' + item.employee_name + '</td>' +
                     '<td>' + item.serviceDate + '</td>' +
                     '<td>' + item.serviceTime + '</td>' +
-                    // '<td>' + item.currency + " " + item.employee_rate + '</td>' +
+                    '<td>' + item.currency + " " + item.employee_rate + '</td>' +
                     '<td class="text-center"></td>' +
                     '</tr>');
                 $wrap.find('td:last-child').append($delItem);
@@ -862,10 +857,10 @@
 
             function onSuccess(jsonData) {
                 var cbmOptions = '<option value="">Unknown User</option>';
-                cbmOptions += '<option selected value="0">Create System User(Pass:12345678)</option>';
-                // $.each(jsonData.data, function () {
-                //     cbmOptions += '<option value=\"' + this.id + '\">' + this.name + '</option>';
-                // });
+                cbmOptions += '<option value="0">Create System User(Pass:12345678)</option>';
+                $.each(jsonData.data, function () {
+                    cbmOptions += '<option value=\"' + this.id + '\">' + this.name + '</option>';
+                });
                 $("#user_id").html(cbmOptions);
             }
 
@@ -880,9 +875,7 @@
 
     var ResourceTimeline = {
         ServiceStatus: function (status) {
-            var serviceStatus = ['Agendado', 'Recordatorio Enviado',
-             'Confirmado', 'Hora Cancelada', 'En sala de espera', 'En Box'
-            , 'Atendido', 'Hospitalizacion', 'En Cirugia'];
+            var serviceStatus = ['Pending', 'Processing', 'Approved', 'Cancel', 'Done'];
             return serviceStatus[status];
         },
         GetTitle: function (title) {
@@ -891,29 +884,17 @@
         GetScheduleBgColorClass: function (status) {
             var itemClass = " bg_new";
             if (status == 0) {
-                itemClass = " bg_agendado";
+                itemClass = " bg_pending";
             } else if (status == 1) {
-                itemClass = " bg_recordatorio_enviado ";
+                itemClass = " bg_processing";
             } else if (status == 2) {
-                itemClass = " bg_confirmado";
+                itemClass = " bg_approved";
             }
             else if (status == 3) {
                 itemClass = " bg_cancel";
             }
             else if (status == 4) {
-                itemClass = " bg_ensala";
-            }
-            else if (status == 5) {
-                itemClass = " bg_enbox";
-            }
-            else if (status == 6) {
-                itemClass = " bg_atendido";
-            }
-            else if (status == 7) {
-                itemClass = " bg_hospitalizacion";
-            }
-            else if (status == 8) {
-                itemClass = " bg_encirugia";
+                itemClass = " bg_done";
             }
             return itemClass;
         },
@@ -997,9 +978,9 @@
                         nowTime: moment(new Date()).format('HH:mm'),
                         startDate: moment($('#filter_date').val()).format('YYYY/MM/DD'),
                         endDate: moment($('#filter_date').val()).format('YYYY/MM/DD'),
-                        weekday: ['Dom.', 'Lun.', 'Mar.', 'Mie.', 'Jue.', 'Vie.', 'Sab.'],
+                        weekday: ['Sun.', 'Mon.', 'Tue.', 'Wed.', 'Thu.', 'Fri.', 'Sat.'],
                         startTime: JsManager.MomentTime(jsonData.serviceTimeSlot.startTime ?? "00:00:00").format("HH:mm"),
-                        endTime: JsManager.MomentTime(jsonData.serviceTimeSlot.endTime ?? "23:59:00").format("HH:mm"),
+                        endTime: JsManager.MomentTime(jsonData.serviceTimeSlot.endTime ?? "233:59:00").format("HH:mm"),
                         widthTimeX: 35,
                         widthTime: 60 * timeType,
                         timeLineY: 70,

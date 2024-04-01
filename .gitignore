@@ -1,2 +1,38 @@
 node_modules
 node_modules
+storage/debugbar
+# Carpeta de dependencias generadas por Composer
+/vendor
+
+# Carpeta de archivos generados por NPM o Yarn
+/node_modules
+
+# Archivo de configuración de entorno
+.env
+
+# Archivo de caché de configuración
+/bootstrap/cache
+
+# Carpeta de archivos de respaldo de texto
+/storage/*.log
+
+# Carpeta de archivos compilados
+/public/css
+/public/js
+
+# Carpeta de archivos de sesión
+/storage/framework/sessions
+
+# Carpeta de archivos compilados de Blade
+/storage/framework/views
+
+# Carpeta de archivos de caché
+/storage/framework/cache
+
+# Archivo de estado de la aplicación
+/storage/framework
+
+# Archivos generados automáticamente
+Homestead.json
+Homestead.yaml
+.idea

@@ -74,7 +74,7 @@ if ($order != null) {
 			{{$details->start_time}}<br>
 			Fin
 			{{$details->end_time }}<br>
-			Nombre Cliente
+			Nombre Cliente 
 			{{$order->full_name}}<br>
 			Email
 			{{$order->email}}<br>

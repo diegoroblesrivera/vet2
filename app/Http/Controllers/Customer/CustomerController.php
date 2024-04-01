@@ -76,7 +76,7 @@ class CustomerController extends Controller
                     'nombre' => $data->pet_name,
                     'especie' => $data->especie,
                     'sexo' => $data->sex,
-                    'otro_esp' => $data->otro_esp,
+                    'otro_esp' => $data->otro_especie,
                     'created_by' => 1,
                     'raza' => $data->raza,
                     //'color' => $data->color,
@@ -86,7 +86,7 @@ class CustomerController extends Controller
                 ];
                 $petRtn = CmnPet::create($savePet);
                 $petId = $petRtn->id;
-                return $this->apiResponse(['status' => '1', 'data' => ['cmn_customer_id' => $rtr->id]], 200);
+                return $this->apiResponse(['status' => '1', 'data' => ['cmn_customer_id' => $rtr->id, 'petdropdown' => $petId]], 200);
             }
             Log::info($data->all());
             return $this->apiResponse(['status' => '500', 'data' => $validator->errors()], 400);

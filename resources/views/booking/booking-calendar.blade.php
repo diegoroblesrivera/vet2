@@ -296,12 +296,9 @@
                                 </div>
 
                                 <div class="col-md-12 mt-3 control-group">
-                                    <label for="petDropdown" class="float-left">{{ translate('Pet') }} <b class="color-red"> *</b> </label>
+                                    <label for="petdropdown" class="float-left">{{ translate('Pet') }} <b class="color-red"> *</b> </label>
                                     <div class="input-group">
-                                        <select id="petDropdown" name="petDropdown" class="form-control" data-live-search="true"></select>
-                                        {{-- <div class="input-group-append">
-                                            <button id="btnAddNewCustomer" class="btn btn-primary btn-sm" type="button"><i class="fas fa-plus-circle"></i> {{translate('New Pet')}}</button>
-                                        </div> --}}
+                                        <select id="petdropdown" name="petdropdown" class="form-control" data-live-search="true"></select>
                                     </div>
                                 </div>
                                 
@@ -562,7 +559,7 @@
                             <div class="col-md-5">
                                 <div class="form-group control-group form-inline controls">
                                     <label>Especifique especie</label>
-                                    <input type="text" id="especie" name="especie" placeholder="(Si Aplica)"  class="form-control input-full" />
+                                    <input type="text" id="otra_especie" name="otra_especie" placeholder="(Si Aplica)"  class="form-control input-full" />
                                     <span class="help-block"></span>
                                 </div>
                             </div>
@@ -630,7 +627,7 @@ $("#cmn_customer_id").on('change', function(){
 
 function loadPets(customerId) {
     if(!customerId) {
-        $('#petDropdown').empty().append('<option value="">Seleccione una mascota</option>');
+        $('#petdropdown').empty().append('<option value="">Seleccione una mascota</option>');
         return;
     }
 
@@ -639,7 +636,7 @@ function loadPets(customerId) {
         type: 'GET',
         success: function(response) {
             if(response.status === '1') {
-                populatePetDropdown(response.data);
+                populatepetdropdown(response.data);
             } else {
                 // Manejar error
             }
@@ -650,12 +647,12 @@ function loadPets(customerId) {
     });
 }
 
-function populatePetDropdown(pets) {
-    var petDropdown = $("#petDropdown");
-    petDropdown.empty();
-    petDropdown.append('<option value="">Seleccione una mascota</option>');
+function populatepetdropdown(pets) {
+    var petdropdown = $("#petdropdown");
+    petdropdown.empty();
+    petdropdown.append('<option value="">Seleccione una mascota</option>');
     $.each(pets, function(key, pet) {
-        petDropdown.append('<option value="' + pet.id + '">' + pet.nombre + '</option>');
+        petdropdown.append('<option value="' + pet.id + '">' + pet.nombre + '</option>');
     });
 }
 
