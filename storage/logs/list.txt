@@ -1,0 +1,11 @@
+actualizar traer datos de fertilidad *
+poner dropdown en fertididad actualizcion mascota*
+al cambiar imagen, mostrar icono proceso *
+actualizar módulo de anteecedentes que no trar bien la info *
+Asociar el nuevo usuario de sistema a la mascota recien creada(formulario de citas)*
+Envio de mail cuando el usuario Confirme cita *
+Inabilitar boton cuendo se confirme la cita*
+cambiar el estado de las mascotas *
+cambiar boton de pay now a "confirmar asistencia"
+ofrecer ingresar si el usuario ya está registrado 
+al validar el mail o el celular 
