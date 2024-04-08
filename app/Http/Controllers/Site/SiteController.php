@@ -822,6 +822,120 @@ class SiteController extends Controller
         }
     } 
 
+    public function saveBooking2(Request $request)
+    {  //dd($request);
+        Log::info($request->all());
+
+        DB::beginTransaction();
+         try {
+            $request = (object)$request->bookingData;
+            $bookingRepo = new BookingRepository();
+            $customerId = 0;
+            $customer = "";
+
+            //if login by user
+       
+            $customer = CmnCustomer::where('user_id', auth()->id())->select('id', 'full_name','email')->first();
+            $pet = CmnPet::where('id', $request->pet_id)->first();
+
+            $customerId = $customer->id;
+            $customerEmail = $customer->email;
+            $customerName = $customer->full_name;
+
+            $petId = $request->pet_id;
+            $petname= $pet->nombre;
+
+            //customer creation/get failed
+            if ($customerId == 0)
+                throw new ErrorException(translate("Failed to save or get customer"));
+
+            //insert service booking
+            $serviceList = array();
+            $serviceTotalAmount = 0;
+            foreach ($request->items as $key => $item) {
+                $item = (object)$item;
+                //get employee wise service charge
+                $serviceCharge = SchEmployeeService::where('sch_employee_id', $item->sch_employee_id)
+                    ->where('sch_service_id', $item->sch_service_id)->select('fees')->first();
+                if ($serviceCharge == null)
+                    throw new ErrorException(translate("This service is not avaiable please try another one.") . ' "' . $item->service_name . '"');
+
+                $serviceTime = explode('-', $item->service_time);
+                $serviceStartTime = $serviceTime[0];
+                $serviceEndTime = $serviceTime[1];
+
+                //check service is booked or not
+                if ($bookingRepo->serviceIsAvaiable($item->sch_service_id, $item->sch_employee_id, $item->service_date, $serviceStartTime, $serviceEndTime) > 0)
+                    throw new ErrorException(translate("The selected service is bocked try another one") . ' "' . $item->service_name . '"');
+
+                //check servicce limitation
+                $serviceLimitation = $bookingRepo->IsServiceLimitation($item->service_date, $customerId, $item->sch_service_id, 1, 1);
+                if ($serviceLimitation['allow'] < 1)
+                    throw new ErrorException(translate($serviceLimitation['message']));
+
+                $serviceStatus = ServiceStatus::Ensala;
+                $serviceTotalAmount = $serviceTotalAmount + $serviceCharge->fees;
+
+                $serviceList[] = [
+                    'id' => null,
+                    'cmn_branch_id' => $item->cmn_branch_id,
+                    'cmn_customer_id' => $customerId,
+                    'cmn_pet_id' => $petId,
+                    'sch_employee_id' => $item->sch_employee_id,
+                    'date' => $item->service_date,
+                    'start_time' => $serviceStartTime,
+                    'end_time' => $serviceEndTime,
+                    'sch_service_id' => $item->sch_service_id,
+                    'status' => 1,
+                    'service_amount' => 0,
+                    'paid_amount' => 0,
+                    'payment_status' => ServicePaymentStatus::Unpaid,
+                    'cmn_payment_type_id' => 1,
+                    'canceled_paid_amount' => 0,
+                    'cancel_paid_status' => ServiceCancelPaymentStatus::Unpaid,
+                    'remarks' => "Nueva Consulta",
+                    'created_by' => $customerId
+                ];
+                
+                Mail::to($customerEmail)->send(new TestEmail($item->service_date, $serviceStartTime,$customerEmail, 
+                $customerName,$petname, "Nueva Consulta"));
+    
+    
+            }
+
+            $payableAmount = $serviceTotalAmount;
+            $couponDiscount = 0;
+
+            $serviceBookingInfo = SchServiceBookingInfo::create([
+                'booking_date' => Carbon::now(),
+                'cmn_customer_id' => $customerId,
+                'cmn_pet_id' => $petId,
+                'total_amount' => 0.0,
+                'payable_amount' => 0,
+                'paid_amount' => 0,
+                'due_amount' => 0,
+                'is_due_paid' => 0,
+                'coupon_code' => '',
+                'coupon_discount' => $couponDiscount,
+                'remarks' => "Nueva Consulta",
+                'created_by' => auth()->id()
+            ]);
+            $serviceBookingInfo->serviceBookings()->attach($serviceList);
+            DB::commit();
+
+            return $this->apiResponse(['status' => 1, 'paymentType' => 'localPayment', 'data' => "successfully save"], 200);
+            //return $this->apiResponse(['status' => 1, 'paymentType' => 'paypal', 'data' => ['serviceBookingId' => $serviceBookingInfo->id, 'returnUrl' => $return]], 200);
+        } catch (ErrorException $ex) {
+            Log::info($ex);
+            DB::rollBack();
+            return $this->apiResponse(['status' => '-501', 'data' => $ex->getMessage()], 400);
+        } catch (Exception $qx) {
+            Log::info($qx);
+            DB::rollBack();
+            return $this->apiResponse(['status' => '501', 'data' => $qx], 400);
+        }
+    }
+
     public function savetheBooking(Request $request)
     {      // dd($request); 227120245
         //dd($request->all());

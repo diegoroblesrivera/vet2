@@ -82,6 +82,8 @@ Route::group(['middleware' => 'xssProtection'], function () {
         Route::post('save-site-service-booking', [App\Http\Controllers\Site\SiteController::class, 'saveBooking'])->name('save.site.service.booking');
        //guardar la cita desde el usuario logeado
        Route::post('save-site-service-booking1', [App\Http\Controllers\Site\SiteController::class, 'saveBooking1'])->name('save.site.service.booking1');
+        //guardar desde administracion
+        Route::post('save-site-service-booking2', [App\Http\Controllers\Site\SiteController::class, 'saveBooking2'])->name('save.site.service.booking2');
         
         Route::post('save-the-booking', [App\Http\Controllers\Site\SiteController::class, 'savetheBooking'])->name('save.the.booking');
         Route::get('paypal-payment-done', [App\Http\Controllers\Payment\PaypalController::class, 'done'])->name('paypal.payment.done');
@@ -111,6 +113,8 @@ Route::group(['middleware' => 'xssProtection'], function () {
         Route::get('site-appoinment-booking', [App\Http\Controllers\Site\WebsiteBookingControllerr::class, 'appoinmentBooking'])->name('site.appoinment.booking');
         //agendamiento de cliente registrado y logeado
         Route::get('site-appoinment-booking1', [App\Http\Controllers\Site\WebsiteBookingControllerr::class, 'appoinmentBooking1'])->name('site.appoinment.booking1');
+        //agendamiento de cliente desde administracion
+        Route::get('site-appoinment-booking2', [App\Http\Controllers\Site\WebsiteBookingControllerr::class, 'appoinmentBooking2'])->name('site.appoinment.booking2');
         
         
         Route::get('single-service-details/{id?}', [App\Http\Controllers\Site\WebsiteController::class, 'serviceDetails'])->name('site.service.single.details');

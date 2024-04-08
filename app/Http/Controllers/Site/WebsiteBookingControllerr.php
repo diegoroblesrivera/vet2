@@ -31,6 +31,19 @@ class WebsiteBookingControllerr extends Controller
         $pets = CmnPet::where('id_dueno', $cliente)->get();
         return view('site.booking1', compact('employees',  'pets'));
     }
+
+    public function appoinmentBooking2(){
+        $employees = $this->getEmployee();
+        $userId = Auth::id();
+
+        // Buscar el cliente con el user_id del usuario logueado
+        $cliente = CmnCustomer::where('user_id', $userId)->value('id');
+
+
+        // Cargar las mascotas del usuario logueado
+        $pets = CmnPet::where('id_dueno', $cliente)->get();
+        return view('site.booking1', compact('employees',  'pets'));
+    }
     public function from(){
         $employees = $this->getEmployee();
         return view('site.from', compact('employees'));

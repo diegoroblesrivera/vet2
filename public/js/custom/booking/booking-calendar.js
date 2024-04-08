@@ -11,6 +11,7 @@
     var bookingList = [];
 
     var widthTimeTypes = [5, 10, 15, 30];
+
     $(document).ready(function () {
         ResourceTimeline.LoadBranchDropDown();
 
@@ -80,7 +81,9 @@
         $("#btnAddSchedule").on("click", function () {
             $("#cmn_branch_id").val($("#filter_cmn_branch_id").val());
             scheduleTempData = null;
-            $("#frmAddScheduleModal").modal('show');
+             $("#frmAddScheduleModal").modal('show');
+            // window.location.href = "site-appoinment-booking2";
+
         })
 
 
@@ -382,7 +385,9 @@
 
             function onSuccess(jsonData) {
                 JsManager.PopulateCombo("#cmn_branch_id", jsonData.data);
+                $("#cmn_branch_id").val($("#cmn_branch_id option:first").val()).change();
             }
+            
             function onFailed(xhr, status, err) {
                 Message.Exception(xhr);
             }
@@ -394,7 +399,9 @@
 
             function onSuccess(jsonData) {
                 JsManager.PopulateCombo("#sch_service_category_id", jsonData.data, "Select One", '');
+                $("#sch_service_category_id").val($("#sch_service_category_id option:first").val()).change();
             }
+            
             function onFailed(xhr, status, err) {
                 Message.Exception(xhr);
             }
@@ -409,8 +416,10 @@
                     cbmOptions += '<option ' + (selectedServiceId == this.id ? "selected" : "") + ' data-price="' + this.fees + '" value=\"' + this.id + '\">' + this.name + '</option>';
                 });
                 $("#sch_service_id").html(cbmOptions);
+                $("#sch_service_id").val($("#sch_service_id option:first").val()).change();
                 $("#sch_service_id").selectpicker('refresh');
             }
+            
             function onFailed(xhr, status, err) {
                 Message.Exception(xhr);
             }
@@ -426,8 +435,10 @@
                     cbmOptions += '<option ' + (selectedEmployeeId == this.id ? "selected" : "") + ' data-price="' + this.fees + '" value=\"' + this.id + '\">' + this.name + '</option>';
                 });
                 $("#sch_employee_id").html(cbmOptions);
+                $("#sch_employee_id").val($("#sch_employee_id option:first").val()).change();
                 $("#sch_employee_id").selectpicker('refresh');
             }
+            
             function onFailed(xhr, status, err) {
                 Message.Exception(xhr);
             }

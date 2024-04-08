@@ -92,7 +92,7 @@ class CustomerController extends Controller
             return $this->apiResponse(['status' => '500', 'data' => $validator->errors()], 400);
         } catch (Exception $ex) {
             Log::info($ex);
-            return $this->apiResponse(['status' => '501', 'data' => $ex], 400);
+            return $this->apiResponse(['status' => '501', 'data' => $ex], 400); 
         }
     }
 

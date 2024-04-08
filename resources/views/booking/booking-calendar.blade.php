@@ -290,7 +290,9 @@
                                     <div class="input-group">
                                         <select required id="cmn_customer_id" name="cmn_customer_id" class="form-control" data-live-search="true"></select>
                                         <div class="input-group-append">
-                                            <button id="btnAddNewCustomer" class="btn btn-primary btn-sm" type="button"><i class="fas fa-plus-circle"></i> {{translate('Add Customer')}}</button>
+                                           <button id="btnAddNewCustomer" 
+                                                class="btn btn-primary btn-sm" type="button"><i class="fas fa-plus-circle"></i> 
+                                                {{translate('Add Customer')}}</button>
                                         </div>
                                     </div>
                                 </div>
@@ -620,6 +622,7 @@
 </div>
 
 <script>
+
 $("#cmn_customer_id").on('change', function(){
     var customerId = $(this).val();
     loadPets(customerId);
@@ -666,6 +669,7 @@ $(document).ready(function() {
     }
     });
 });
+
 
 
 
