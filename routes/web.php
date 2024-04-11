@@ -330,6 +330,9 @@ Route::group(['middleware' => 'xssProtection'], function () {
             Route::get('get-coupon-amount-from-admin', [App\Http\Controllers\Booking\SchServiceBookingController::class, 'getCouponAmount'])->name('get-coupon-amount-from-admin');
 
             Route::get('download-service-invoice-order', [App\Http\Controllers\Booking\SchServiceBookingController::class, 'DownloadServiceOrder'])->name('download.service.invoice.order');
+            //Creacion de la receta en PDF
+            Route::get('receta', [App\Http\Controllers\Booking\SchServiceBookingController::class, 'receta'])->name('receta');
+
         });
 
 

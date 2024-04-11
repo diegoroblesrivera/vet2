@@ -1023,7 +1023,7 @@ backdrop-filter: blur(6.2px);
         <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="cancelModalLabel">Registrar Consulta</h5>
+                <h5 class="modal-title" id="cancelModalLabel">Registrar Consulta </h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
                 </button>
@@ -1079,7 +1079,7 @@ backdrop-filter: blur(6.2px);
                         <div class="col-md-4">
                             <div class="form-group control-group form-inline controls">
                                 <label>{{translate('Peso')}}</label>
-                                <input type="text" id="peso" name="peso" class="form-control input-full" required />
+                                <input type="text" id="peso" name="peso" class="form-control input-full"  />
                                 <span class="help-block"></span>
                             </div>
                         </div>
@@ -1376,6 +1376,7 @@ backdrop-filter: blur(6.2px);
                                     <label for="notas_trata">Observaciones:</label>
                                     <textarea class="form-control" id="notas_trata" name="notas_trata" rows="8"></textarea>
                                 </div> 
+                                         <a href="" id="pdf">Imprimir PDF</a>
                             </div>
                         
                     </div>
@@ -1663,6 +1664,23 @@ backdrop-filter: blur(6.2px);
 
 <script src="{{dsAsset('js/custom/pet/pets2.js')}}"></script>
 <script>
+$("#pdf").on('click', function () {
+    // Obtener los valores de los campos del formulario
+    var campo1 = $("#notas_trata").val();
+    var campo2 = $("#campo2").val();
+    var campo3 = $("#campo3").val();
+
+    // Construir la URL con los datos del formulario
+    var url = JsManager.BaseUrl() + '/receta';
+    url += '?campo1=' + campo1 + '&campo2=' + campo2 + '&campo3=' + campo3;
+
+    // Abrir la nueva ventana con la URL que incluye los datos del formulario
+    window.open(url);
+});
+
+
+
+
     function enviarFormulario() {
         document.getElementById('formulario-imagen').submit();
     }

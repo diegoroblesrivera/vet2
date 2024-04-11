@@ -467,6 +467,38 @@ class SchServiceBookingController extends Controller
         $mpdf->Output('service_order_invoice_' . now()->format('YmdHis') . '.pdf', 'I');
     }
 
+    public function receta(Request $request)
+{
+    $mpdf = new \Mpdf\Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4-P',
+        'default_font' => 'dejavusans',
+        'setAutoTopMargin' => 'stretch',
+        'setAutoBottomMargin' => 'stretch',
+    ]);
+    $mpdf->AddPageByArray([
+        'margin-left' => 10,
+        'margin-right' => 10,
+        'margin-top' => 10,
+        'margin-bottom' => 10,
+    ]);
+
+    $mpdf->SetTitle('Service Order Invoice');
+    
+    // Recuperar los datos adicionales del formulario
+    $additionalData = [
+        'campo1' => $request->input('campo1'),
+        'campo2' => $request->input('campo2'),
+        'campo3' => $request->input('campo3'),
+    ];
+
+    $mpdf->WriteHTML(view('reports.receta', [
+        'additional_data' => $additionalData, // Pasar los datos adicionales a la vista
+    ]));
+    $mpdf->Output('service_order_invoice_' . now()->format('YmdHis') . '.pdf', 'I');
+}
+
+
     public function cambiarEstadoUltimaCita(Request $request, $idMascota)
 {
     // Encontrar la última cita de la mascota
