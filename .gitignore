@@ -1,2 +1,11 @@
 node_modules
 node_modules
+
+.env
+
+storage
+storage/framework
+storage/framework/cache
+storage/framework/sessions
+storage/framework/views
+storage/logs

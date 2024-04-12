@@ -396,7 +396,7 @@
 
             function onSuccess(jsonData) {
                 JsManager.PopulateCombo("#sch_service_category_id", jsonData.data, "Seleccione una", '');
-                $("#sch_service_category_id").val('2').change();
+                $("#sch_service_category_id").val('2').trigger('change');
             }
             function onFailed(xhr, status, err) {
                 Message.Exception(xhr);
@@ -413,7 +413,7 @@
                 });
                 $("#sch_service_id").html(cbmOptions);
                 $("#sch_service_id").selectpicker('refresh');
-                $("#sch_service_id").val('2').change();
+                $("#sch_service_id").val('2').trigger('change');
             }
             function onFailed(xhr, status, err) {
                 Message.Exception(xhr);
