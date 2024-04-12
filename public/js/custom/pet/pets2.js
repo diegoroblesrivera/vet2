@@ -546,9 +546,10 @@ function openCirugia(id_ciru = null) {
 function openCancelModal(id_consu = null) {
 
 
-	console.log("serviceId66:");
+	console.log("serviceId6www6:");
         // Si id_ciru es null, podría ser una indicación para crear una nueva entrada en lugar de actualizar una existente
         if(id_consu) {
+            console.log("se supone que hay datos:");
 
     // Hacer una solicitud AJAX para obtener datos existentes
     $.ajax({
@@ -556,6 +557,7 @@ function openCancelModal(id_consu = null) {
         type: 'GET',
         success: function(data) {
             if (data && data.id) {
+                console.log("se supone que hay datos dentro de los cargados:");
                 // Aquí rellenas el formulario con los datos existentes
                 $('#peso').val(data.peso);
 				$('#pesoLabel').text(data.peso);
@@ -629,7 +631,7 @@ function openCancelModal(id_consu = null) {
 				$('#obeso').val(data.obeso);
 				$('#anam').val(data.anam);
 				$('#imagenes').val(data.imagenes);
-                ('#tieneconsu').val(1); // Indica que hay cirugía existente
+                $('#tieneconsu').val(1); // Indica que hay cirugía existente
                 console.log("Tiene registros, debe actualizar:", data.nombre_cirugia);
             } else {
                 // No se encontraron datos

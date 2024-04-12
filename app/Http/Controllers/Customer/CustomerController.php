@@ -107,7 +107,7 @@ class CustomerController extends Controller
     } else {
         // Actualizar una cita existente
         // Asegúrate de que tienes un identificador único para buscar la cita existente
-        $cita = CmnCitas::findOrFail($request->id);
+        $cita = CmnCitas::findOrFail($request->id_consu);
     }
 
     // Asignar los valores del formulario a la cita
