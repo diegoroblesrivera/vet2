@@ -19,6 +19,8 @@ Route::get('/enviar-correo', [App\Http\Controllers\Site\SiteController::class,  
 Route::get('/home-expo', [App\Http\Controllers\Dashboard\DashboardController::class, 'homeExpo'])->name('home.expo');
 Route::get('/confirmaciones', [App\Http\Controllers\Dashboard\DashboardController::class, 'confirmaciones'])->name('confirmaciones');
 Route::post('/cita-create', [\App\Http\Controllers\Customer\CustomerController::class, 'citaStore'])->name('customer.citaStore');
+//ruta para guardar los archivos de los animales
+Route::post('/customer-guardararchivo', [\App\Http\Controllers\Customer\CustomerController::class, 'guardarArvhivo'])->name('customer.guardararchivo');
 Route::post('inmu-create', [\App\Http\Controllers\Customer\CustomerController::class, 'inmuStore'])->name('customer.inmuStore');
 Route::post('cliStore', [\App\Http\Controllers\Customer\CustomerController::class, 'cliStore'])->name('customer.cliStore');
 Route::post('anteStore', [\App\Http\Controllers\Customer\CustomerController::class, 'anteStore'])->name('customer.anteStore');

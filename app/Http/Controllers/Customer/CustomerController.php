@@ -6,6 +6,7 @@ use App\Enums\UserType;
 use App\Http\Controllers\Controller;
 use App\Http\Repository\UtilityRepository;
 use App\Models\Customer\CmnCustomer;
+use App\Models\Customer\CmFiles;
 use App\Models\Booking\SchServiceBooking;
 use App\Models\CmnCitas;
 use App\Models\Customer\CmAntecedente;
@@ -21,6 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
@@ -97,7 +99,7 @@ class CustomerController extends Controller
     }
 
     public function citaStore(Request $request)
-{   
+    {   
     // dd($request->all());
     //$mascota = CmnCustomer::findOrFail($request->cmn_pet_idconsu);
     // Validación de los datos del formulario
@@ -168,7 +170,7 @@ class CustomerController extends Controller
 
     // Redireccionar con un mensaje de éxito
     return back()->with('success', $request->tieneconsu == 0 ? 'Consulta creada exitosamente' : 'Consulta actualizada exitosamente');
-}
+    }
 
     public function inmuStore(Request $request)
     {   //dd($request->all());
@@ -640,5 +642,39 @@ class CustomerController extends Controller
         } catch (Exception $qx) {
             return $this->apiResponse(['status' => '403', 'data' => $qx], 400);
         }
+    }
+
+    
+
+    public function guardarArvhivo(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file',
+            'id_mascot_id'=>'required',
+            'concepto' => 'required',
+        ]);
+
+        $file = $request->file('file');
+        $id_mascot_id = $request->input('id_mascot_id');
+        $concepto = $request->input('concepto');
+        $filename = $file->getClientOriginalName();
+        Log::info('Vemos que mustra aca'. $filename);
+        $currentMonthYear = Carbon::now()->format('Y-m');
+        $path = 'uploads/' . $currentMonthYear;
+
+        if (!Storage::exists($path)) {
+            Storage::makeDirectory($path);
+            
+        }
+        Log::info('donde se supone que guarda'. $concepto);
+        $storedFile = $file->storeAs($path, $filename);
+
+        // Guardar la ruta en la base de datos
+        CmFiles::create(['url' => $storedFile , 'concepto'=>$concepto , 'id_pet'=>$id_mascot_id ]);
+
+        return response()->json([
+            'url' => asset('uploads/' . $currentMonthYear . '/' . $filename),
+            'filename' => $filename,
+        ]);
     }
 }

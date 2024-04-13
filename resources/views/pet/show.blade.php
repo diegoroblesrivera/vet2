@@ -321,6 +321,8 @@ backdrop-filter: blur(6.2px);
                                 <a class="dropdown-item" href="#" onclick="openDespa()"><i class="fas fa-bug"></i> Desparacitaciones</a>
                                 <a class="dropdown-item" href="#" onclick="openCirugia()"><i class="fas fa-stethoscope"></i> Cirugia</a>
                                 <a class="dropdown-item" href="#" onclick="openPeluqueria()"><i class="fas fa-cut"></i> Peluqueria</a>
+                                <a class="dropdown-item" href="#" data-toggle="modal" data-target="#nuevofile"><i class="fas fa-save"></i> Archivo</a>
+
                             </div>
                                                         <!-- Botón para cambiar el estado con advertencia -->
                                                                 <form id="form-cambiar-estado" method="POST" action="{{ route('cambiar_estado_ultima_cita', ['idMascota' => $id]) }}">
@@ -354,6 +356,9 @@ backdrop-filter: blur(6.2px);
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" data-toggle="tab" href="#tabs-3" role="tab">Historial</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-toggle="tab" href="#tabs-4" role="tab">Archivos</a>
                         </li>
                     </ul><!-- Tab panes -->
                     <div class="tab-content">
@@ -632,6 +637,75 @@ backdrop-filter: blur(6.2px);
                                                 </div>
                                             </div>
                                             @endforeach
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="tab-pane" id="tabs-4" role="tabpanel">
+                            <p>Archivos</p>
+
+                            <div class="container">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="main-timeline4">
+                                            <form id="uploadForm1" enctype="multipart/form-data">
+                                                @csrf
+                                                <input type="hidden" id="id_mascot_id" name="id_mascot_id" value="{{$id}}">
+                                                <input type="file" name="file" id="file">
+                                                <input type="text" name="concepto" id="concepto" placeholder="Concepto(ej; rayos)">
+                                                <button type="submit">Subir Archivo</button>
+                                                
+                                            </form>
+                                            <div id="uploadedFiles"></div>
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <th>Tipo</th>
+                                                        <th>Nombre del Archivo</th>
+                                                        <th>Concepto</th>
+                                                        <th>Fecha de Carga</th>
+                                                        <!-- Agrega más columnas si lo necesitas -->
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach($files as $file)
+                                                        <tr>
+                                                            <td>
+                                                                @php
+                                                                    // Obtener la extensión del archivo
+                                                                    $extension = pathinfo($file->url, PATHINFO_EXTENSION);
+                                                                    // Definir el icono de Font Awesome basado en la extensión del archivo
+                                                                    switch ($extension) {
+                                                                        case 'jpg':
+                                                                        case 'jpeg':
+                                                                        case 'png':
+                                                                        case 'gif':
+                                                                            $icon = 'fas fa-image'; // Icono para imágenes
+                                                                            break;
+                                                                        case 'txt':
+                                                                            $icon = 'fas fa-file-alt'; // Icono para archivos de texto
+                                                                            break;
+                                                                        case 'pdf':
+                                                                            $icon = 'fas fa-file-pdf'; // Icono para archivos PDF
+                                                                            break;
+                                                                        default:
+                                                                            $icon = 'fas fa-file'; // Icono por defecto para otros tipos de archivo
+                                                                    }
+                                                                @endphp
+                                                                <i class="{{ $icon }}"></i>
+                                                            </td>
+                                                            <td><a href="{{ url($file->url) }}" target="_blank">{{ basename($file->url) }}</a>
+                                                            </td> <!-- Puedes mostrar el nombre del archivo o algún otro detalle -->
+                                                            <td>{{ $file->concepto }}</td>
+                                                            <td>{{ $file->created_at }}</td> <!-- Muestra la fecha de carga u otra información relevante -->
+                                                            <!-- Agrega más celdas si lo necesitas -->
+                                                        </tr>
+                                                    @endforeach
+                                                </tbody>
+                                            </table>
                                             
                                         </div>
                                     </div>
@@ -1376,7 +1450,8 @@ backdrop-filter: blur(6.2px);
                                     <label for="notas_trata">Observaciones:</label>
                                     <textarea class="form-control" id="notas_trata" name="notas_trata" rows="8"></textarea>
                                 </div> 
-                                         <a href="" id="pdf">Imprimir PDF</a>
+                                        
+                                         <button class="btn btn-info"  id="pdf" >Imprimir PDF</button>
                             </div>
                         
                     </div>
@@ -1661,22 +1736,64 @@ backdrop-filter: blur(6.2px);
     </div>
 <!-- Fin modal antecedentes-->
 
+<!-- Modal Archivos-->
+<div class="modal fade" id="nuevofile" tabindex="-1" role="dialog" aria-labelledby="nuevofileLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="nuevofileLabel">Agregar archivos nuevos</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <form id="uploadForm2" enctype="multipart/form-data">
+                @csrf
+                <input type="hidden" id="id_mascot_id" name="id_mascot_id" value="{{$id}}">
+                <div class="form-group">
+                    <label for="file">Seleccionar Archivo</label>
+                    <input type="file" class="form-control-file" id="file" name="file" required>
+                </div>
+                <div class="form-group">
+                    <label for="concepto">Concepto</label>
+                    <input type="text" class="form-control" id="concepto" name="concepto" placeholder="Concepto (ej; rayos)" required>
+                </div>
+                {{-- <button type="submit" class="btn btn-primary">Subir Archivo</button> --}}
+                
+                <br>
+                <div id="successAlert" style="padding-top: 12px"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                </div>
+            </form>
+            
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Final Modal Archivos-->
+
 
 <script src="{{dsAsset('js/custom/pet/pets2.js')}}"></script>
 <script>
 $("#pdf").on('click', function () {
     // Obtener los valores de los campos del formulario
     var campo1 = $("#notas_trata").val();
-    var campo2 = $("#campo2").val();
+    var campo2 = {{$id}};
     var campo3 = $("#campo3").val();
+
+    // Codificar el texto con saltos de línea
+    var campo1Encoded = encodeURIComponent(campo1);
 
     // Construir la URL con los datos del formulario
     var url = JsManager.BaseUrl() + '/receta';
-    url += '?campo1=' + campo1 + '&campo2=' + campo2 + '&campo3=' + campo3;
+    url += '?campo1=' + campo1Encoded + '&campo2=' + campo2 + '&campo3=' + campo3;
 
     // Abrir la nueva ventana con la URL que incluye los datos del formulario
     window.open(url);
 });
+
 
 
 
@@ -1704,6 +1821,45 @@ $("#pdf").on('click', function () {
         document.getElementById('mensaje-carga').style.display = 'block'; // Mostrar el mensaje de carga
         document.getElementById('formulario-imagen').submit(); // Enviar el formulario
     }
+// Función para manejar el envío de formularios
+function handleFormSubmit(event) {
+    event.preventDefault();
+
+    // Obtener el formulario que se está enviando
+    var form = this;
+
+    // Crear un objeto FormData con los datos del formulario
+    var formData = new FormData(form);
+
+
+    // Realizar la solicitud AJAX
+    $.ajax({
+        url: '{{ route("customer.guardararchivo") }}',
+        method: 'POST',
+        data: formData,
+        processData: false,
+        contentType: false,
+        success: function(response) {
+            // Manejar la respuesta de éxito
+            $('#uploadedFiles').append('<p>Archivo subido: <a href="' + response.url + '">' + response.filename + '</a></p>');
+            $('#successAlert').show().html('<div class="alert alert-success" role="alert"> Subido Exitosamente </div>');
+            document.getElementById('uploadForm2').reset();
+            setTimeout(function() {
+                $('#successAlert').fadeOut();
+            }, 5000);
+
+        },
+        error: function(xhr, status, error) {
+            // Manejar errores
+            console.error(xhr.responseText);
+        }
+    });
+}
+
+// Agregar un evento de envío de formulario a cada formulario
+document.getElementById('uploadForm1').addEventListener('submit', handleFormSubmit);
+document.getElementById('uploadForm2').addEventListener('submit', handleFormSubmit);
+
 </script>
 
 

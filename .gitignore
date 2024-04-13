@@ -31,6 +31,8 @@ storage/debugbar
 # Archivo de estado de la aplicación
 /storage/framework
 
+/storage/debugbar
+
 # Archivos generados automáticamente
 Homestead.json
 Homestead.yaml

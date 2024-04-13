@@ -17,6 +17,7 @@ use App\Http\Repository\SmsNotification\SmsNotificationRepository;
 use App\Http\Repository\UtilityRepository;
 use App\Models\Booking\SchServiceBookingInfo;
 use App\Models\Customer\CmnCustomer;
+use App\Models\Customer\CmnPet;
 use App\Models\Employee\SchEmployee;
 use App\Models\Settings\CmnCompany;
 use App\Models\User;
@@ -391,7 +392,7 @@ class SchServiceBookingController extends Controller
     {
         try {
             $bookingRepo = new BookingRepository();
-            return $this->apiResponse(['status' => '1', 'data' => $bookingRepo->ChangeBookingStatusAndReturnBookingData($request->id, ServiceStatus::Done, $request->email_notify)], 200);
+            return $this->apiResponse(['status' => '1', 'data' => $bookingRepo->ChangeBookingStatusAndReturnBookingData($request->id, ServiceStatus::Atendido, $request->email_notify)], 200);
         } catch (ErrorException $ex) {
             return $this->apiResponse(['status' => '-501', 'data' => $ex->getMessage()], 400);
         } catch (Exception $qx) {
@@ -476,6 +477,16 @@ class SchServiceBookingController extends Controller
         'setAutoTopMargin' => 'stretch',
         'setAutoBottomMargin' => 'stretch',
     ]);
+    $imagePath = public_path('uploads/logo.png');
+
+    // Verificar si la imagen existe
+    if (file_exists($imagePath)) {
+        // Incrustar la imagen en el PDF
+        $mpdf->Image($imagePath, 0, 0, 210, 297, 'png', '', true, false);
+    } else {
+        // Si la imagen no existe, mostrar un mensaje de error
+        return 'La imagen no existe.';
+    }
     $mpdf->AddPageByArray([
         'margin-left' => 10,
         'margin-right' => 10,
@@ -484,18 +495,27 @@ class SchServiceBookingController extends Controller
     ]);
 
     $mpdf->SetTitle('Service Order Invoice');
+            // Ejecutar la consulta utilizando Eloquent ORM
+            $pet = CmnPet::findOrFail($request->input('campo2')); // Encuentra la mascota por su ID
+            $customer = CmnCustomer::findOrFail($pet->id_dueno); // Encuentra al cliente por el ID del dueño de la mascota
+    
     
     // Recuperar los datos adicionales del formulario
-    $additionalData = [
-        'campo1' => $request->input('campo1'),
-        'campo2' => $request->input('campo2'),
-        'campo3' => $request->input('campo3'),
-    ];
+// Recuperar los datos adicionales del formulario
+$additionalData = [
+    'campo1' => urldecode($request->input('campo1')),
+    'campo2' => $request->input('campo2'),
+    'campo3' => $request->input('campo3'),
+];
+
 
     $mpdf->WriteHTML(view('reports.receta', [
         'additional_data' => $additionalData, // Pasar los datos adicionales a la vista
+        'pet' =>$pet ,
+        'customer' => $customer,
+
     ]));
-    $mpdf->Output('service_order_invoice_' . now()->format('YmdHis') . '.pdf', 'I');
+    $mpdf->Output('FacilVet_receta_' . now()->format('YmdHis') . '.pdf', 'I');
 }
 
 

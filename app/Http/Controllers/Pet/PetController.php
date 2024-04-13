@@ -8,6 +8,7 @@ use App\Http\Repository\UtilityRepository;
 use App\Models\Customer\CmnPet;
 use App\Models\Customer\CmAntecedente;
 use App\Models\Customer\CmExamenes;
+use App\Models\Customer\CmFiles;
 use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
@@ -89,10 +90,14 @@ class PetController extends Controller
 
             $ant = optional(CmAntecedente::where('id_pet', $id)->first());
             $examenes = CmExamenes::all();
+
+            $files = CmFiles::where('id_pet', $id)
+                ->orderBy('created_at', 'desc')
+                ->get();
           
 
             //dd($pets);
-            return view('pet.show', ['id' => $id], compact('pets', 'eventos', 'ant','examenes' ));
+            return view('pet.show', ['id' => $id], compact('pets', 'eventos', 'ant','examenes', 'files' ));
     }
 
         // Método para actualizar el estado de la mascota
